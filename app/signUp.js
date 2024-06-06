@@ -1,4 +1,4 @@
-import {View, Text,Image, Pressable, Alert} from "react-native";
+import {View, Text,Image,Pressable, Alert} from "react-native";
 import React, { useState } from "react";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { StatusBar } from "expo-status-bar";
@@ -9,16 +9,16 @@ import { useRouter } from "expo-router";
 import { useRef } from "react";
 import Loading from "../components/Loading";
 import CustomKeyboardView from "../components/CustomKeyboardView";
+import { useAuth } from "../context/authContext";
 
 
 export default function SignUp(){
     const router=useRouter();
+    const {register}=useAuth();
     const [loading,setLoading]=useState(false);
-
     const emailRef=useRef("");
-
     const passwordRef=useRef("");
-
+    const usernameRef=useRef("");
     const profileUrl=useRef("");
 
     const handleRegister =async()=>{
@@ -26,7 +26,14 @@ export default function SignUp(){
             Alert.alert("Регистрация","Пожалуйста заполните все поля");
             return;
         }
+        setLoading(true);
+        let response=await register(emailRef.current,passwordRef.current,profileUrl.current,usernameRef.current);
+        setLoading(false);
 
+        console.log('got result:',response);
+        if(!response.success){
+            Alert.alert('Sign Up',response.msg);
+        }
 
     }
 
